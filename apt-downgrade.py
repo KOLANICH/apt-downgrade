@@ -34,7 +34,8 @@ parser.add_option("-f", "--force", action="store_true", default=False,
         help="force the requested changes, don't resolve problems")
 opts, args = parser.parse_args()
 
-import apt, apt.progress, apt_pkg
+import apt
+import apt_pkg
 
 # try to grab the system lock briefly, so we're not caught without it later
 try:
@@ -49,7 +50,7 @@ cache = apt.Cache()
 
 if opts.update:
     print "Updating package cache..."
-    cache.update(apt.progress.TextFetchProgress())
+    cache.update()
 
 print "Searching for installed packages that are no longer available..."
 for pkg in cache:
@@ -92,9 +93,7 @@ if cache.get_changes():
     if user_proceed("Do you wish to make the changes above? [n]? ", default=False):
         while True:
             try:
-                cache.commit(
-                        apt.progress.TextFetchProgress(),
-                        apt.progress.InstallProgress())
+                cache.commit()
             except SystemError as exc:
                 print exc
                 if not user_proceed("An error occurred, try again? [y]? "):
